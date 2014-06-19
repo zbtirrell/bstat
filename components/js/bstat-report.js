@@ -1,4 +1,4 @@
-console.info("loaded!!!!!!!!!!");
+console.info( 'loaded!!!!!!!!!!' );
 
 var bstat_report = {};
 
@@ -71,8 +71,6 @@ var bstat_report = {};
 	var hover = new Hover( { graph: graph } );
 
 	$( function() {
-		$( '#bstat-viewer .tabs' ).tabs();
-
 		bstat_report.actions_pie = function() {
 
 			var width = 960,
@@ -102,5 +100,32 @@ var bstat_report = {};
 				.attr( 'd', arc );
 		};
 		bstat_report.actions_pie();
+
+		$( '#bstat-viewer .tabs' ).tabs( {
+			beforeLoad: function( event, ui ) {
+				if ( ui.tab.data( 'loaded' ) ) {
+					event.preventDefault();
+					return;
+				}//end if
+
+				ui.ajaxSettings.cache = false;
+				ui.panel.html( '<i class="fa fa-spinner fa-spin" />' );
+				ui.jqXHR.success( function() {
+					ui.tab.data( 'loaded', true );
+				});
+				ui.jqXHR.error( function() {
+					ui.panel.html( 'There was a problem loading this data. Please try reloading the page.' );
+				});
+			}
+		} );
+		$( document ).on( 'click', '#bstat-goal .set', function( e ) {
+			e.preventDefault();
+
+			var $el = $( this );
+			var $container = $( '#bstat-goal' );
+
+			$container.toggleClass( 'show-goals' );
+			$container.find( 'ul' ).slideToggle( 'fast' );
+		});
 	});
 })(jQuery);
