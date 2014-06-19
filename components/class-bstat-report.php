@@ -15,7 +15,7 @@ class bStat_Report
 
 		add_action( 'admin_menu', array( $this, 'admin_menu_init' ) );
 		wp_register_style( bstat()->id_base . '-report', plugins_url( 'css/bstat-report.css', __FILE__ ), array( 'rickshaw' ), bstat()->version );
-		wp_register_script( bstat()->id_base . '-report', plugins_url( 'js/bstat-report.js', __FILE__ ), array( 'rickshaw', 'jquery-ui-tabs' ), bstat()->version, TRUE );
+		wp_register_script( bstat()->id_base . '-report', plugins_url( 'js/bstat-report.js', __FILE__ ), array( 'rickshaw', 'jquery-ui-tabs', 'd3' ), bstat()->version, TRUE );
 	} // END init
 
 	// add the menu item to the dashboard
@@ -43,7 +43,7 @@ class bStat_Report
 		);
 
 		return $goal;
-	}
+	}//end parse_goal
 
 	public function get_goal()
 	{
@@ -53,14 +53,14 @@ class bStat_Report
 		}
 
 		return $this->parse_goal( $_GET['goal'] );
-	}
+	}//end get_goal
 
 	public function goal_url( $goal )
 	{
 		$url = admin_url( '/index.php?page=' . bstat()->id_base . '-report' );
 
 		return add_query_arg( array( 'goal' => $goal['blog'] . ':' . $goal['component'] . ':' . $goal['action'] . ':' . $goal['frequency'] ), $url );
-	}
+	}//end goal_url
 
 	public function report_url( $filter = array(), $additive = TRUE )
 	{
@@ -73,7 +73,7 @@ class bStat_Report
 		}
 
 		return add_query_arg( $filter, $url );
-	}
+	}//end report_url
 
 	public function default_filter( $add_filter = array() )
 	{
@@ -93,7 +93,7 @@ class bStat_Report
 		date_default_timezone_set( $old_tz );
 
 		return array_merge( $filter, (array) $add_filter );
-	}
+	}//end default_filter
 
 	public function set_filter( $filter = FALSE )
 	{
@@ -111,7 +111,7 @@ class bStat_Report
 		}
 
 		$this->filter = (array) $filter;
-	}
+	}// end set_filter
 
 	public function cache_key( $part, $filter = FALSE )
 	{
@@ -126,25 +126,25 @@ class bStat_Report
 	public function cache_ttl()
 	{
 		return mt_rand( 101, 503 ); // prime numbers for almost 2 minutes or a little over 8 minutes
-	}
+	}//end cache_ttl
 
-	function sort_by_hits_desc( $a, $b )
+	public function sort_by_hits_desc( $a, $b )
 	{
 		if ( $a->hits == $b->hits )
 		{
 			return 0;
 		}
 		return ( $a->hits < $b->hits ) ? 1 : -1;
-	}
+	}//end sort_by_hits_desc
 
-	function sort_by_sessions_on_goal_desc( $a, $b )
+	public function sort_by_sessions_on_goal_desc( $a, $b )
 	{
 		if ( $a->sessions_on_goal == $b->sessions_on_goal )
 		{
 			return 0;
 		}
 		return ( $a->sessions_on_goal < $b->sessions_on_goal ) ? 1 : -1;
-	}
+	}//end sort_by_sessions_on_goal_desc
 
 	public function timeseries( $quantize_minutes = 1, $for = FALSE, $ids = FALSE, $filter = FALSE )
 	{
@@ -177,8 +177,7 @@ class bStat_Report
 				{
 					$timeseries[ $quantized_time ] = 1;
 				}
-
-			}
+			}// end foreach
 
 			ksort( $timeseries );
 
@@ -189,13 +188,13 @@ class bStat_Report
 			$timeseries = array_replace( $keys, $timeseries );
 
 			wp_cache_set( $cachekey, $timeseries, bstat()->id_base, $this->cache_ttl() );
-		}
+		}// end if
 
 		// tips for using the output:
 		// the array key is a quantized timestamp, pass it into date( $format, $quantized_time ) and get a human readable date.
 		// the value is the count of activity hits for that quantized time segment.
 		return $timeseries;
-	}
+	}//end timeseries
 
 	public function multi_timeseries( $quantize_minutes = 1, $for = FALSE, $ids = FALSE, $filters = array() )
 	{
@@ -222,7 +221,7 @@ class bStat_Report
 		}
 
 		return $filters;
-	}
+	}//end multi_timeseries
 
 	public function get_posts( $top_posts_list, $query_args = array() )
 	{
@@ -252,10 +251,10 @@ class bStat_Report
 			}
 
 			wp_cache_set( $cachekey, $get_posts, bstat()->id_base, $this->cache_ttl() );
-		}
+		}// end if
 
 		return $get_posts;
-	}
+	}//end get_posts
 
 	public function top_posts( $filter = FALSE )
 	{

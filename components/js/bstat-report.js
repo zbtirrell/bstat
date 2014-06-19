@@ -1,16 +1,23 @@
-(function($){
+console.info("loaded!!!!!!!!!!");
 
-/*
-Disabled because palette.color() returns black for every iteration in this context
-Preserved because I'd love to figure out why
+var bstat_report = {};
+
+( function( $ ) {
+
+	'use strict';
+
+	/*
+	Disabled because palette.color() returns black for every iteration in this context
+	Preserved because I'd love to figure out why
 	var palette = new Rickshaw.Color.Palette();
 
 	for (var i = 0; i < bstat_timeseries.length; i++) {
 	    bstat_timeseries.color = palette.color();
 	}
-*/
+	*/
+
 	var graph = new Rickshaw.Graph( {
-		element: document.getElementById("bstat-timeseries-container-chart"),
+		element: document.getElementById( 'bstat-timeseries-container-chart' ),
 		width: $('#wpbody-content').width() - 20,
 		height: ( $('#wpbody-content').width() - 20 ) / 3.5,
 		renderer: 'bar',
@@ -65,5 +72,35 @@ Preserved because I'd love to figure out why
 
 	$( function() {
 		$( '#bstat-viewer .tabs' ).tabs();
+
+		bstat_report.actions_pie = function() {
+
+			var width = 960,
+				height = 500,
+				radius = Math.min( width, height ) / 2 - 10;
+
+			var color = d3.scale.category20();
+
+			var arc = d3.svg.arc().outerRadius( radius );
+
+			var pie = d3.layout.pie();
+
+			var svg = d3.select( '#components-actions-pie' ).append( 'svg' )
+				.datum( this.actions_pie_data )
+				.attr( 'width', width )
+				.attr( 'height', height)
+				.append( 'g' )
+				.attr( 'transform', 'translate(' + width / 2 + ',' + height / 2 + ')' );
+
+			var arcs = svg.selectAll( 'g.arc' )
+				.data( pie )
+				.enter().append( 'g' )
+				.attr( 'class', 'arc' );
+
+			arcs.append( 'path' )
+				.attr( 'fill', function(d, i) { return color( i ); } )
+				.attr( 'd', arc );
+		};
+		bstat_report.actions_pie();
 	});
 })(jQuery);

@@ -29,5 +29,18 @@ foreach ( $components_and_actions as $component_and_action )
 		$component_and_action->action,
 		$component_and_action->hits
 	);
-}
-echo '</ol>';
+}// end foreach
+?>
+</ol>
+
+<div id="components-actions-graph">
+	<script>
+	/*
+	bstat_report.actions_pie_data = [
+		<?php
+		echo implode( ',', wp_list_pluck( $component_and_action, 'hits' ) );
+		?>
+	];
+	*/
+	</script>
+</div>
